@@ -6,6 +6,13 @@ import ru.sbt.utils.BeanUtils;
 
 public class Main {
     public static void main(String[] args) {
-        BeanUtils.assign(new Person("Peter", 22), new Wocker("Bob", 21, "Risk", 1));
+        Person person = new Person("Peter", 22);
+        Wocker wocker = new Wocker("Bob", 21, "sklad", 1);
+        System.out.println(person);
+        System.out.println(wocker);
+        BeanUtils.assign(person, wocker);
+        System.out.println("----------------------------------");
+        System.out.println(person);
+        System.out.println(wocker);
     }
 }

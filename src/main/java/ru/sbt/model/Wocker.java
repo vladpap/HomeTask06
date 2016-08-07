@@ -33,4 +33,9 @@ public class Wocker extends Person {
     public String getName() {
         return super.getName();
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + ", otdel " + this.otdl + ", code otdel " + this.codO;
+    }
 }

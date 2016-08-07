@@ -24,4 +24,9 @@ public class Person {
     public void setAges(Integer ages) {
         this.ages = ages;
     }
+
+    @Override
+    public String toString() {
+        return this.name + ", age " + this.ages;
+    }
 }

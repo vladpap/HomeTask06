@@ -1,5 +1,6 @@
 package ru.sbt.utils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class BeanUtils {
@@ -43,20 +44,34 @@ public class BeanUtils {
                 if ((method.getName().matches("set[A-Z].+")) &&
                         (method.getParameterCount() == 1) &&
                         (method.getReturnType() == void.class) &&
-                        (methodFrom.getName().length() == method.getName().length()) &&
-                        (methodFrom.getReturnType() == method.getParameterTypes()[0])) {
-                    // TODO: 07.08.16 invoke
+                        (isEqualsMetodGetFromSetTo(method, methodFrom))) {
                     invokeMetod(to, method, from, methodFrom);
                 }
             }
             clazz = clazz.getSuperclass();
         }
-        System.out.println("----------------------------------");
     }
 
     private static void invokeMetod(Object to, Method methodTo, Object from, Method methodFrom) {
 
-        System.out.println(to.getClass().getName() + " " + methodTo.getName() + " - " +
-                from.getClass().getName() + " " + methodFrom.getName());
+        try {
+            methodTo.invoke(to, (methodFrom.invoke(from)));
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Error invoke", e);
+        }
+    }
+
+    private static boolean isEqualsMetodGetFromSetTo(Method to, Method from) {
+
+        boolean result = false;
+        if ((to.getName().length() != from.getName().length()) ||
+                (to.getParameterTypes()[0] != from.getReturnType())) {
+            return false;
+        }
+        if (to.getName().substring(3).equals(from.getName().substring(3))) {
+            result = true;
+        }
+
+        return result;
     }
 }
