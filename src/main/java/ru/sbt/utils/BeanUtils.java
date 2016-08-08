@@ -54,7 +54,6 @@ public class BeanUtils {
             }
             clazz = clazz.getSuperclass();
         }
-        System.out.println(resultMethods);
         return resultMethods;
     }
 
