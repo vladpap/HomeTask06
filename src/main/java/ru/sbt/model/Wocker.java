@@ -1,13 +1,24 @@
 package ru.sbt.model;
 
-public class Wocker extends Person {
+public class Wocker {
+    private String name;
+    private Number ages;
     private String otdl;            //  otdel
     private Integer codO;           //  code otdel
 
-    public Wocker(String name, Integer ages, String otdl, Integer codO) {
-        super(name, ages);
+    public Wocker(String name, Number ages, String otdl, Integer codO) {
+        this.name = name;
+        this.ages = ages;
         this.otdl = otdl;
         this.codO = codO;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Number getAges() {
+        return ages;
     }
 
     public String getOtdl() {
@@ -18,6 +29,14 @@ public class Wocker extends Person {
         return codO;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAges(Number ages) {
+        this.ages = ages;
+    }
+
     public void setOtdl(String otdl) {
         this.otdl = otdl;
     }
@@ -26,16 +45,8 @@ public class Wocker extends Person {
         this.codO = codO;
     }
 
-    public void setName(String name) {
-        super.setName(name);
-    }
-
-    public String getName() {
-        return super.getName();
-    }
-
     @Override
     public String toString() {
-        return super.toString() + ", otdel " + this.otdl + ", code otdel " + this.codO;
+        return this.name + ", age " + this.ages + ", otdel " + this.otdl + ", code otdel " + this.codO;
     }
 }

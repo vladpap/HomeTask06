@@ -2,6 +2,8 @@ package ru.sbt.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BeanUtils {
     /**
@@ -21,6 +23,8 @@ public class BeanUtils {
      * @param from Object which properties will be used to get values.
      */
     public static void assign(Object to, Object from) {
+
+        List<Method> methodsTo = getMethodsSetFromObject(to);
         Class<?> clazz = from.getClass();
         while (clazz != null) {
             Method[] methods = clazz.getMethods();
@@ -28,27 +32,38 @@ public class BeanUtils {
                 if ((method.getName().matches("get[A-Z].+")) &&
                         (method.getParameterCount() == 0) &&
                         (method.getReturnType() != void.class)) {
-                    searchSetters(to, from, method);
+                    searchSetters(to, methodsTo, from, method);
                 }
             }
             clazz = clazz.getSuperclass();
         }
     }
 
-    private static void searchSetters(Object to, Object from, Method methodFrom) {
+    private static List<Method> getMethodsSetFromObject(Object o) {
 
-        Class<?> clazz = to.getClass();
+        List<Method> resultMethods = new ArrayList<>();
+        Class<?> clazz = o.getClass();
         while (clazz != null) {
             Method[] methods = clazz.getMethods();
             for (Method method : methods) {
                 if ((method.getName().matches("set[A-Z].+")) &&
                         (method.getParameterCount() == 1) &&
-                        (method.getReturnType() == void.class) &&
-                        (isEqualsMetodGetFromSetTo(method, methodFrom))) {
-                    invokeMetod(to, method, from, methodFrom);
+                        (method.getReturnType() == void.class)) {
+                    resultMethods.add(method);
                 }
             }
             clazz = clazz.getSuperclass();
+        }
+        System.out.println(resultMethods);
+        return resultMethods;
+    }
+
+    private static void searchSetters(Object to, List<Method> methodsTo, Object from, Method methodFrom) {
+
+        for (Method methodTo : methodsTo) {
+            if (isEqualsMetodGetFromSetTo(methodTo, methodFrom)) {
+                invokeMetod(to, methodTo, from, methodFrom);
+            }
         }
     }
 
@@ -56,7 +71,7 @@ public class BeanUtils {
 
         try {
             methodTo.invoke(to, (methodFrom.invoke(from)));
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
             throw new RuntimeException("Error invoke", e);
         }
     }
@@ -65,7 +80,7 @@ public class BeanUtils {
 
         boolean result = false;
         if ((to.getName().length() != from.getName().length()) ||
-                (to.getParameterTypes()[0] != from.getReturnType())) {
+                (!from.getReturnType().isAssignableFrom(to.getParameterTypes()[0]))) {
             return false;
         }
         if (to.getName().substring(3).equals(from.getName().substring(3))) {
